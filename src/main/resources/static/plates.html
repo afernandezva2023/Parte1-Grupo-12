@@ -101,19 +101,19 @@ async function createPlate() {
     cargarPlatos();
 }
 
-async function cargarPlatos() {
+async function chargePlates() {
     const res = await fetch("/platos");
     const data = await res.json();
 
-    const lista = document.getElementById("lista");
-    lista.innerHTML = "";
+    const list = document.getElementById("lista");
+    listainnerHTML = "";
 
     data.forEach(p => {
     const li = document.createElement("li");
 
     li.textContent = p.nombre + " - " + p.precio + "€ ";
 
-    // ✏️ EDITAR
+    
     const btnEdit = document.createElement("button");
     btnEdit.textContent = "Editar";
     btnEdit.onclick = async () => {
