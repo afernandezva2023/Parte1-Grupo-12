@@ -117,20 +117,20 @@ async function chargePlates() {
     const btnEdit = document.createElement("button");
     btnEdit.textContent = "Editar";
     btnEdit.onclick = async () => {
-        const nuevoNombre = prompt("Nuevo nombre:", p.nombre);
-        const nuevoPrecio = prompt("Nuevo precio:", p.precio);
+        const newName = prompt("Nuevo nombre:", p.nombre);
+        const newPrice = prompt("Nuevo precio:", p.precio);
 
-        if (nuevoNombre !== null && nuevoPrecio !== null) {
+        if (newName !== null && newPrice !== null) {
             await fetch("/platos/" + p.id, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    nombre: nuevoNombre,
-                    precio: parseFloat(nuevoPrecio)
+                    nombre: newName,
+                    precio: parseFloat(newPrice)
                 })
             });
 
-            cargarPlatos();
+            chargePlates();
         }
     };
 
