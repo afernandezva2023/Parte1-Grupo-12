@@ -13,55 +13,55 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.restaurante.model.Pedido;
+import com.example.restaurante.model.Order;
 
 @RestController
-@RequestMapping("/pedidos")
-public class PedidoController {
+@RequestMapping("/orders")
+public class orderController {
 
-    private Map<Long, Pedido> pedidos = new HashMap<>();
-    private Long contador = 1L;
+    private Map<Long, Order> orders = new HashMap<>();
+    private Long count = 1L;
 
     // GET TODOS
     @GetMapping
-    public Collection<Pedido> getPedidos() {
-        return pedidos.values();
+    public Collection<Order> getOrders() {
+        return orders.values();
     }
 
     // POST CREAR
     @PostMapping
-    public Pedido crearPedido(@RequestBody Pedido pedido) {
-        pedido.setId(contador++);
-        pedidos.put(pedido.getId(), pedido);
-        return pedido;
+    public Order createOrder(@RequestBody Order order) {
+        order.setId(contador++);
+        order.put(order.getId(), order);
+        return order;
     }
 
     // GET POR ID
     @GetMapping("/{id}")
-    public Pedido getPedido(@PathVariable Long id) {
-        return pedidos.get(id);
+    public Order getOrder(@PathVariable Long id) {
+        return order.get(id);
     }
 
     // DELETE
     @DeleteMapping("/{id}")
-    public void borrarPedido(@PathVariable Long id) {
-        pedidos.remove(id);
+    public void erraseOrder(@PathVariable Long id) {
+        orders.remove(id);
     }
 
     // PATCH (EDITAR)
     @PatchMapping("/{id}")
-    public Pedido actualizarParcial(@PathVariable Long id, @RequestBody Pedido nuevo) {
+    public Pedido updateParcial(@PathVariable Long id, @RequestBody Order new) {
 
-        Pedido pedido = pedidos.get(id);
+        Order order = orders.get(id);
 
-        if (pedido != null) {
+        if (order != null) {
 
-            if (nuevo.getClienteNombre() != null) {
-                pedido.setClienteNombre(nuevo.getClienteNombre());
+            if (new.getClientName() != null) {
+                order.setClientName(new.getClientName());
             }
 
-            if (nuevo.getPlatos() != null) {
-                pedido.setPlatos(nuevo.getPlatos());
+            if (new.getPlates() != null) {
+                order.setPlates(nuevo.getPlatos());
             }
 
             if (nuevo.getTotal() != null) {
