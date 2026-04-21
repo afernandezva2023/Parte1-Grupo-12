@@ -1,27 +1,27 @@
 package com.example.restaurante;
 
-import com.example.restaurante.model.Cliente;
+import com.example.restaurante.model.Client;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping("/clientss")
 public class ClientController {
 
     private Map<Long, Client> clients = new HashMap<>();
     private Long count = 1L;
 
-    // GET -> obtener todos
+    // GET 
     @GetMapping
     public Collection<Client> getClients() {
         return clients.values();
     }
 
-    // POST -> crear cliente
+    // POST -> create
     @PostMapping
     public Client createClient(@RequestBody Client client) {
-        clients.setId(count++);
+        client.setId(count++);
         clients.put(client.getId(), client);
         return client;
     }
@@ -38,14 +38,15 @@ public class ClientController {
         clients.remove(id);
     }
 
-    // PATCH (actualización parcial)
+    // PATCH (update parcial)
     @PatchMapping("/{id}")
-    public Client updateParcial(@PathVariable Long id, @RequestBody Client new) {
+    public Client updateParcial(@PathVariable Long id, @RequestBody Client newClient) {
         Client client = clients.get(id);
         if (client != null) {
-            if (new.getName() != null) client.setName(new.getName());
-            if (new.getEmail() != null) client.setEmail(new.getEmail());
-        }
+        if (newClient.getName() != null) client.setName(newClient.getName());
+        if (newClient.getEmail() != null) client.setEmail(newClient.getEmail());
+        }   
         return client;
     }
 }
+
