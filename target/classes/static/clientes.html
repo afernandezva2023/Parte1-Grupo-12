@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clientes</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        input {
+            margin: 5px;
+            padding: 5px;
+        }
+
+        button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+</style>
+</head>
+<body>
+
+<h1>Crear Cliente</h1>
+
+<input id="nombre" placeholder="Nombre">
+<input id="email" placeholder="Email">
+<button onclick="crearCliente()">Crear</button>
+
+<h2>Lista de Clientes</h2>
+<ul id="lista"></ul>
+
+<script>
+async function crearCliente() {
+    const nombre = document.getElementById("nombre").value;
+    const email = document.getElementById("email").value;
+
+    await fetch("/clientes", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ nombre, email })
+    });
+
+    cargarClientes();
+}
+
+    async function cargarClientes() {
+        const res = await fetch("/clientes");
+        const data = await res.json();
+
+        const lista = document.getElementById("lista");
+        lista.innerHTML = "";
+
+        data.forEach(c => {
+        const li = document.createElement("li");
+
+        li.textContent = c.nombre + " - " + c.email + " ";
+
+        const btnEdit = document.createElement("button");
+            btnEdit.textContent = "Editar";
+            btnEdit.onclick = async () => {
+            const nuevoNombre = prompt("Nuevo nombre:", c.nombre);
+            const nuevoEmail = prompt("Nuevo email:", c.email);
+
+        await fetch("/clientes/" + c.id, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                nombre: nuevoNombre,
+                 email: nuevoEmail
+        })
+    });
+
+    cargarClientes();
+};
+
+        const btn = document.createElement("button");
+        btn.textContent = "Borrar";
+        btn.onclick = async () => {
+            await fetch("/clientes/" + c.id, { method: "DELETE" });
+            cargarClientes();
+        };
+
+        li.appendChild(btnEdit);
+        li.appendChild(btn);
+        lista.appendChild(li);
+    });
+}
+
+cargarClientes();
+</script>
+
+</body>
+</html>

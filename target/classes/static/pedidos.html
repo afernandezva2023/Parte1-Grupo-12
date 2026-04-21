@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Pedidos</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(120deg, #2c3e50, #4ca1af);
+            padding: 30px;
+            color: white;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        input {
+            width: 100%;
+            margin: 8px 0;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: orange;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: darkorange;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background: rgba(255,255,255,0.2);
+            margin-top: 10px;
+            padding: 12px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        li button {
+            width: auto;
+            margin-left: 5px;
+            background: red;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Crear Pedido</h1>
+
+<input id="clienteNombre" placeholder="Nombre Cliente">
+<input id="platos" placeholder="Platos (ej: pizza,pasta)">
+<input id="total" placeholder="Total">
+
+<button onclick="crearPedido()">Crear</button>
+
+<h2>Lista de Pedidos</h2>
+<ul id="lista"></ul>
+
+</div>
+
+<script>
+
+async function crearPedido() {
+    const clienteNombre = document.getElementById("clienteNombre").value;
+    const platos = document.getElementById("platos").value.split(",");
+    const total = parseFloat(document.getElementById("total").value);
+
+    await fetch("/pedidos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            clienteNombre: clienteNombre,
+            platos: platos,
+            total: total
+        })
+    });
+
+    cargarPedidos();
+}
+
+async function cargarPedidos() {
+    const res = await fetch("/pedidos");
+    const data = await res.json();
+
+    const lista = document.getElementById("lista");
+    lista.innerHTML = "";
+
+    data.forEach(p => {
+        const li = document.createElement("li");
+
+        li.textContent =
+            "Cliente: " + p.clienteNombre +
+            " | Platos: " + p.platos.join(", ") +
+            " | Total: " + p.total + "€ ";
+
+        // ✏️ EDITAR
+        const btnEdit = document.createElement("button");
+        btnEdit.textContent = "Editar";
+        btnEdit.onclick = async () => {
+            const nuevoCliente = prompt("Nuevo nombre cliente:", p.clienteNombre);
+            const nuevosPlatos = prompt("Nuevos platos (ej: pizza,pasta):", p.platos.join(","));
+            const nuevoTotal = prompt("Nuevo total:", p.total);
+
+            if (nuevoCliente !== null && nuevosPlatos !== null && nuevoTotal !== null) {
+                await fetch("/pedidos/" + p.id, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        clienteNombre: nuevoCliente,
+                        platos: nuevosPlatos.split(","),
+                        total: parseFloat(nuevoTotal)
+                    })
+                });
+
+                cargarPedidos();
+            }
+        };
+
+        // 🗑️ BORRAR
+        const btnDelete = document.createElement("button");
+        btnDelete.textContent = "Borrar";
+        btnDelete.onclick = async () => {
+            await fetch("/pedidos/" + p.id, {
+                method: "DELETE"
+            });
+            cargarPedidos();
+        };
+
+        li.appendChild(btnEdit);
+        li.appendChild(btnDelete);
+        lista.appendChild(li);
+    });
+}
+
+cargarPedidos();
+
+</script>
+
+</body>
+</html>
