@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Orders</title>
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #eef2f3, #dfe9f3);
+    padding: 30px;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+input {
+    width: 100%;
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(135deg, #ff9800, #e68900);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #e68900, #cc7a00);
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: #fff;
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.05);
+}
+
+.actions {
+    margin-top: 10px;
+}
+
+.actions button {
+    width: auto;
+    margin-right: 5px;
+    padding: 5px 10px;
+}
+
+.edit {
+    background: #007bff;
+}
+
+.edit:hover {
+    background: #0056b3;
+}
+
+.delete {
+    background: #dc3545;
+}
+
+.delete:hover {
+    background: #b02a37;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Create Order</h1>
+
+<input id="clientName" placeholder="Client Name">
+<input id="plates" placeholder="Plates (pizza,pasta)">
+<input id="total" placeholder="Total">
+
+<button onclick="createOrder()">Create Order</button>
+
+<h2>Orders List</h2>
+<ul id="list"></ul>
+
+</div>
+
+<script>
+
+async function createOrder() {
+    const clientName = document.getElementById("clientName").value;
+    const plates = document.getElementById("plates").value.split(",");
+    const total = parseFloat(document.getElementById("total").value);
+
+    await fetch("/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientName, plates, total })
+    });
+
+    loadOrders();
+}
+
+async function loadOrders() {
+    const res = await fetch("/orders");
+    const data = await res.json();
+
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+
+    data.forEach(o => {
+        const li = document.createElement("li");
+
+        const info = document.createElement("div");
+        info.innerHTML = `
+            <strong>Client:</strong> ${o.clientName}<br>
+            <strong>Plates:</strong> ${o.plates.join(", ")}<br>
+            <strong>Total:</strong> ${o.total} €
+        `;
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+
+        const btnEdit = document.createElement("button");
+        btnEdit.textContent = "Edit";
+        btnEdit.className = "edit";
+        btnEdit.onclick = async () => {
+            const newClient = prompt("New client name:", o.clientName);
+            const newPlates = prompt("New plates:", o.plates.join(","));
+            const newTotal = prompt("New total:", o.total);
+
+            if (newClient !== null && newPlates !== null && newTotal !== null) {
+                await fetch("/orders/" + o.id, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        clientName: newClient,
+                        plates: newPlates.split(","),
+                        total: parseFloat(newTotal)
+                    })
+                });
+
+                loadOrders();
+            }
+        };
+
+        const btnDelete = document.createElement("button");
+        btnDelete.textContent = "Delete";
+        btnDelete.className = "delete";
+        btnDelete.onclick = async () => {
+            await fetch("/orders/" + o.id, {
+                method: "DELETE"
+            });
+            loadOrders();
+        };
+
+        actions.appendChild(btnEdit);
+        actions.appendChild(btnDelete);
+
+        li.appendChild(info);
+        li.appendChild(actions);
+
+        list.appendChild(li);
+    });
+}
+
+loadOrders();
+
+</script>
+
+</body>
+</html>
