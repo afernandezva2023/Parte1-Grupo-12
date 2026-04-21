@@ -73,85 +73,83 @@
 
 <div class="container">
 
-<h1>Crear Pedido</h1>
+<h1>Create Order</h1>
 
-<input id="clienteNombre" placeholder="Nombre Cliente">
-<input id="platos" placeholder="Platos (ej: pizza,pasta)">
+<input id="clientName" placeholder="Client Name">
+<input id="plates" placeholder="Plates (ex: pizza,pasta)">
 <input id="total" placeholder="Total">
 
-<button onclick="crearPedido()">Crear</button>
+<button onclick="createOrder()">Create</button>
 
-<h2>Lista de Pedidos</h2>
-<ul id="lista"></ul>
+<h2>Order List</h2>
+<ul id="list"></ul>
 
 </div>
 
 <script>
 
-async function crearPedido() {
-    const clienteNombre = document.getElementById("clienteNombre").value;
-    const platos = document.getElementById("platos").value.split(",");
+async function createOrder() {
+    const clientName = document.getElementById("clientName").value;
+    const plates = document.getElementById("plates").value.split(",");
     const total = parseFloat(document.getElementById("total").value);
 
-    await fetch("/pedidos", {
+    await fetch("/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            clienteNombre: clienteNombre,
-            platos: platos,
+            clientName: clientName,
+            plates: plates,
             total: total
         })
     });
 
-    cargarPedidos();
+    loadOrders();
 }
 
-async function cargarPedidos() {
-    const res = await fetch("/pedidos");
+async function loadOrders() {
+    const res = await fetch("/orders");
     const data = await res.json();
 
-    const lista = document.getElementById("lista");
+    const list = document.getElementById("list");
     lista.innerHTML = "";
 
     data.forEach(p => {
         const li = document.createElement("li");
 
         li.textContent =
-            "Cliente: " + p.clienteNombre +
-            " | Platos: " + p.platos.join(", ") +
+            "Client: " + p.clientName +
+            " | Plates: " + p.plates.join(", ") +
             " | Total: " + p.total + "€ ";
 
         // ✏️ EDITAR
         const btnEdit = document.createElement("button");
-        btnEdit.textContent = "Editar";
+        btnEdit.textContent = "Edit";
         btnEdit.onclick = async () => {
-            const nuevoCliente = prompt("Nuevo nombre cliente:", p.clienteNombre);
-            const nuevosPlatos = prompt("Nuevos platos (ej: pizza,pasta):", p.platos.join(","));
-            const nuevoTotal = prompt("Nuevo total:", p.total);
+            const newClient = prompt("New client name:", p.clientName);
+            const newPlates = prompt("New plates (ej: pizza,pasta):", p.plates.join(","));
+            const newTotal = prompt("New total:", p.total);
 
-            if (nuevoCliente !== null && nuevosPlatos !== null && nuevoTotal !== null) {
-                await fetch("/pedidos/" + p.id, {
+            if (newClient !== null && newPlates !== null && newTotal !== null) {
+                await fetch("/orders/" + p.id, {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        clienteNombre: nuevoCliente,
-                        platos: nuevosPlatos.split(","),
-                        total: parseFloat(nuevoTotal)
+                        clientName: newClient,
+                        plates: newPlates.split(","),
+                        total: parseFloat(newTotal)
                     })
                 });
 
-                cargarPedidos();
+                loadOrders();
             }
         };
-
-        // 🗑️ BORRAR
         const btnDelete = document.createElement("button");
-        btnDelete.textContent = "Borrar";
+        btnDelete.textContent = "Delete";
         btnDelete.onclick = async () => {
-            await fetch("/pedidos/" + p.id, {
+            await fetch("/orders/" + p.id, {
                 method: "DELETE"
             });
-            cargarPedidos();
+            loadOrders();
         };
 
         li.appendChild(btnEdit);
@@ -160,7 +158,7 @@ async function cargarPedidos() {
     });
 }
 
-cargarPedidos();
+loadOrders();
 
 </script>
 
