@@ -17,8 +17,7 @@ public class Plate {
     public void setId(Long id) { this.id = id; }
 
     public String getName() { return name; }
-    public void setName(String nombre) { this.name = name; }
+    public void setName(String nombre) { this.name = nombre; }
 
     public double getPrice() { return price; }
-    public void setPrice(double precio) { this.price = price; }
-}
+    public void setPrice(double precio) { this.price = precio; }
