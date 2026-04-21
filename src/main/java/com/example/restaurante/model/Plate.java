@@ -21,3 +21,4 @@ public class Plate {
 
     public double getPrice() { return price; }
     public void setPrice(double precio) { this.price = precio; }
+}
