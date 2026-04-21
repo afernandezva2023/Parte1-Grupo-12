@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Clientes</title>
+    <title>Clients</title>
     <style>
         body {
             font-family: Arial;
@@ -33,66 +33,66 @@
 </head>
 <body>
 
-<h1>Crear Cliente</h1>
+<h1>Create Client</h1>
 
-<input id="nombre" placeholder="Nombre">
+<input id="name" placeholder="Name">
 <input id="email" placeholder="Email">
-<button onclick="crearCliente()">Crear</button>
+<button onclick="createClient()">Create</button>
 
 <h2>Lista de Clientes</h2>
-<ul id="lista"></ul>
+<ul id="list"></ul>
 
 <script>
-async function crearCliente() {
-    const nombre = document.getElementById("nombre").value;
+async function createCliente() {
+    const name = document.getElementById("name").value;
     const email = document.getElementById("email").value;
 
-    await fetch("/clientes", {
+    await fetch("/clients", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ nombre, email })
+        body: JSON.stringify({ name, email })
     });
 
-    cargarClientes();
+    loadClientes();
 }
 
-    async function cargarClientes() {
-        const res = await fetch("/clientes");
+    async function loadClientes() {
+        const res = await fetch("/clients");
         const data = await res.json();
 
-        const lista = document.getElementById("lista");
+        const list = document.getElementById("list");
         lista.innerHTML = "";
 
         data.forEach(c => {
         const li = document.createElement("li");
 
-        li.textContent = c.nombre + " - " + c.email + " ";
+        li.textContent = c.name + " - " + c.email + " ";
 
         const btnEdit = document.createElement("button");
-            btnEdit.textContent = "Editar";
+            btnEdit.textContent = "Edit";
             btnEdit.onclick = async () => {
-            const nuevoNombre = prompt("Nuevo nombre:", c.nombre);
-            const nuevoEmail = prompt("Nuevo email:", c.email);
+            const newName = prompt("New Name:", c.name);
+            const newEmail = prompt("New email:", c.email);
 
-        await fetch("/clientes/" + c.id, {
+        await fetch("/clients/" + c.id, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                nombre: nuevoNombre,
-                 email: nuevoEmail
+                nombre: newName,
+                 email: newEmail
         })
     });
 
-    cargarClientes();
+    loadClientes();
 };
 
         const btn = document.createElement("button");
-        btn.textContent = "Borrar";
+        btn.textContent = "Errase";
         btn.onclick = async () => {
-            await fetch("/clientes/" + c.id, { method: "DELETE" });
-            cargarClientes();
+            await fetch("/clients/" + c.id, { method: "DELETE" });
+            loadClientes();
         };
 
         li.appendChild(btnEdit);
