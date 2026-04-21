@@ -89,8 +89,8 @@
 
 <script>
 async function createPlate() {
-    const nombre = document.getElementById("nombre").value;
-    const precio = parseFloat(document.getElementById("precio").value);
+    const name = document.getElementById("nombre").value;
+    const price = parseFloat(document.getElementById("precio").value);
 
     await fetch("/platos", {
         method: "POST",
