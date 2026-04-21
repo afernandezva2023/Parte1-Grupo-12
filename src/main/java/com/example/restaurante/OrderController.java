@@ -50,7 +50,7 @@ public class orderController {
 
     // PATCH (EDITAR)
     @PatchMapping("/{id}")
-    public Pedido updateParcial(@PathVariable Long id, @RequestBody Order new) {
+    public Order updateParcial(@PathVariable Long id, @RequestBody Order new) {
 
         Order order = orders.get(id);
 
@@ -61,14 +61,14 @@ public class orderController {
             }
 
             if (new.getPlates() != null) {
-                order.setPlates(nuevo.getPlatos());
+                order.setPlates(new.getPlates());
             }
 
-            if (nuevo.getTotal() != null) {
-                pedido.setTotal(nuevo.getTotal());
+            if (new.getTotal() != null) {
+                order.setTotal(new.getTotal());
             }
         }
 
-        return pedido;
+        return orders;
     }
 }
