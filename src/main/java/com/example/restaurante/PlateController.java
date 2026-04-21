@@ -19,7 +19,7 @@ public class PlateController {
 
     @PostMapping
     public Plate createPlate(@RequestBody Plate plate) {
-        plate.setId(contador++);
+        plate.setId(count++);
         plates.put(plate.getId(), plate);
         return plate;
     }
@@ -35,12 +35,18 @@ public class PlateController {
     }
 
     @PatchMapping("/{id}")
-    public Plate uptdateParcial(@PathVariable Long id, @RequestBody Plate new) {
+    public Plate uptdateParcial(@PathVariable Long id, @RequestBody Plate newPlate) {
         Plate plate = plates.get(id);
         if (plate != null) {
-            if (new.getName() != null) plate.setName(new.getName());
-            if (new.getPrice() != 0) plate.setPrice(new.getPrice());
+            if (newPlate.getName() != null) {
+                plate.setName(newPlate.getName());
+            }
+
+            if (newPlate.getPrice() != 0) {
+            plate.setPrice(newPlate.getPrice());
+            }
         }
-        return plate;
+    return plate;
     }
 }
+
