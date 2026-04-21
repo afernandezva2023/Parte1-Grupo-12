@@ -1,50 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8">  
     <title>Plates</title>
+
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            padding: 30px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff9966, #ff5e62);
+            margin: 0;
+            padding: 20px;
+            color: white;
         }
 
-        h1 {
+        h1, h2 {
             text-align: center;
-            color: #333;
         }
 
         .container {
-            max-width: 500px;
+            max-width: 600px;
             margin: auto;
-            background: white;
+            background: rgba(255,255,255,0.1);
             padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
         }
 
         input {
-            width: 100%;
-            margin: 8px 0;
+            width: 45%;
             padding: 10px;
+            margin: 5px;
+            border: none;
             border-radius: 8px;
-            border: 1px solid #ccc;
         }
 
         button {
-            width: 100%;
-            padding: 10px;
-            background: linear-gradient(135deg, #28a745, #218838);
-            color: white;
+            padding: 10px 15px;
+            margin: 5px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
         }
 
-        button:hover {
-            background: linear-gradient(135deg, #218838, #1e7e34);
+        .create-btn {
+            background: #00c853;
+            color: white;
+        }
+
+        .edit-btn {
+            background: #ffab00;
+            color: black;
+        }
+
+        .delete-btn {
+            background: #d50000;
+            color: white;
         }
 
         ul {
@@ -53,105 +64,110 @@
         }
 
         li {
-            background: #fff;
-            margin-top: 10px;
-            padding: 12px;
-            border-radius: 10px;
+            background: rgba(255,255,255,0.2);
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.05);
         }
 
-        li button {
-            width: auto;
-            background: #dc3545;
-            padding: 5px 10px;
-            font-size: 12px;
+        .info {
+            flex: 1;
         }
-
-        li button:hover {
-            background: #c82333;
-        }
-</style>
+    </style>
 </head>
+
 <body>
+
 <div class="container">
 
-<h1>Create Plate</h1>
+    <h1>Plates</h1>
 
-<input id="name" placeholder="Name">
-<input id="price" placeholder="Price">
-<button onclick="createPlate()">Create</button>
+    <h2>Create Plate</h2>
 
-<h2>List of Plates</h2>
-<ul id="lista"></ul>
+    <input id="name" placeholder="Name">
+    <input id="price" placeholder="Price">
+    <button class="create-btn" onclick="createPlate()">Create</button>
+
+    <h2>Plates List</h2>
+    <ul id="list"></ul>
+
+</div>
 
 <script>
-async function createPlate() {
-    const name = document.getElementById("nombre").value;
-    const price = parseFloat(document.getElementById("precio").value);
 
-    await fetch("/platos", {
+async function createPlate() {
+    const name = document.getElementById("name").value;
+    const price = parseFloat(document.getElementById("price").value);
+
+    await fetch("/plates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre, precio })
+        body: JSON.stringify({ name: name, price: price })
     });
 
-    cargarPlatos();
+    loadPlates();
 }
 
-async function chargePlates() {
-    const res = await fetch("/platos");
+async function loadPlates() {
+    const res = await fetch("/plates");
     const data = await res.json();
 
-    const list = document.getElementById("lista");
-    listainnerHTML = "";
+    const list = document.getElementById("list");
+    list.innerHTML = "";
 
     data.forEach(p => {
-    const li = document.createElement("li");
 
-    li.textContent = p.name + " - " + p.price + "€ ";
+        const li = document.createElement("li");
 
-    
-    const btnEdit = document.createElement("button");
-    btnEdit.textContent = "Editar";
-    btnEdit.onclick = async () => {
-        const newName = prompt("Nuevo nombre:", p.nombre);
-        const newPrice = prompt("Nuevo precio:", p.precio);
+        const info = document.createElement("div");
+        info.className = "info";
+        info.textContent = p.name + " - " + p.price + "€";
 
-        if (newName !== null && newPrice !== null) {
-            await fetch("/platos/" + p.id, {
+        // EDITAR
+        const btnEdit = document.createElement("button");
+        btnEdit.textContent = "Editar";
+        btnEdit.className = "edit-btn";
+
+        btnEdit.onclick = async () => {
+            const newName = prompt("Nuevo nombre:", p.name);
+            const newPrice = prompt("Nuevo precio:", p.price);
+
+            await fetch("/plates/" + p.id, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    nombre: newName,
-                    precio: parseFloat(newPrice)
+                    name: newName,
+                    price: parseFloat(newPrice)
                 })
             });
 
-            chargePlates();
-        }
-    };
-
-        const btn = document.createElement("button");
-        btn.textContent = "Borrar";
-        btn.onclick = async () => {
-                await fetch("/platos/" + p.id, {
-                method: "DELETE"
-            });
-            chargePlates();
+            loadPlates();
         };
 
+        // BORRAR
+        const btnDelete = document.createElement("button");
+        btnDelete.textContent = "Borrar";
+        btnDelete.className = "delete-btn";
+
+        btnDelete.onclick = async () => {
+            await fetch("/plates/" + p.id, { method: "DELETE" });
+            loadPlates();
+        };
+
+        li.appendChild(info);
         li.appendChild(btnEdit);
-        li.appendChild(btn);
-        lista.appendChild(li);
+        li.appendChild(btnDelete);
+
+        list.appendChild(li);
     });
 }
 
-ChargePlates();
+loadPlates();
+
 </script>
 
-</div>
 </body>
 </html>
