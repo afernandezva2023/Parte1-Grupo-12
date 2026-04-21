@@ -111,7 +111,7 @@ async function chargePlates() {
     data.forEach(p => {
     const li = document.createElement("li");
 
-    li.textContent = p.nombre + " - " + p.precio + "€ ";
+    li.textContent = p.name + " - " + p.price + "€ ";
 
     
     const btnEdit = document.createElement("button");
@@ -140,7 +140,7 @@ async function chargePlates() {
                 await fetch("/platos/" + p.id, {
                 method: "DELETE"
             });
-            cargarPlatos();
+            chargePlates();
         };
 
         li.appendChild(btnEdit);
@@ -149,7 +149,7 @@ async function chargePlates() {
     });
 }
 
-cargarPlatos();
+ChargePlates();
 </script>
 
 </div>
