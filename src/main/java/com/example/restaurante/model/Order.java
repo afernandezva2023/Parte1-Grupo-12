@@ -26,20 +26,16 @@ public class Order {
         this.id = id;
     }
 
-     public String getClientName() {
+    public String getClientName() {
         return clientName;
-    }
-    
-    public List<String> getPlates() {
-        return plates;
     }
 
     public void setClientName(String clientName) {
         this.clientName = clientName;
     }
 
-    public void setPlates(List<String> plates) {
-        this.plates = plates;
+    public List<String> getPlates() {
+        return plates;
     }
 
     public void setPlates(List<String> plates) {
