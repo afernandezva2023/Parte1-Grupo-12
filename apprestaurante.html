@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Work & Brew Restaurant</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body { font-family: Arial; }
+
+.navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+
+.nav-buttons a {
+    text-decoration: none;
+    color: black;
+    background: #f0f0f0;
+    padding: 8px 15px;
+    margin-left: 10px;
+    border-radius: 20px;
+}
+.nav-buttons a:hover {
+    background: #c59d5f;
+    color: white;
+}
+
+.hero {
+    background: url("https://images.unsplash.com/photo-1555396273-367ea4eb4db5") center/cover;
+    height: 90vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+}
+.hero h1 {
+    background: rgba(0,0,0,0.5);
+    padding:20px 40px;
+}
+
+.section-title {
+    font-size:40px;
+    font-weight:bold;
+}
+.section-title::after {
+    content:"";
+    width:80px;
+    height:3px;
+    background:#c59d5f;
+    display:block;
+    margin:10px auto;
+}
+
+.specialties {
+    padding:60px 0;
+    background:#111;
+    color:white;
+}
+.dish-card {
+    background:white;
+    color:black;
+    padding:10px;
+    border-radius:10px;
+    margin-bottom:15px;
+}
+
+.gallery {
+    padding:60px 0;
+    background:#f8f9fa;
+}
+.gallery-img {
+    width:100%;
+    height:200px;
+    object-fit:cover;
+}
+
+.reservations {
+    padding:60px 0;
+    background:#f8f9fa;
+}
+
+#adminPanel {
+    display:none;
+    padding:60px;
+    background:#eee;
+}
+
+.ubicacion {
+    padding:60px 0;
+    background:#f4f4f4;
+}
+
+.footer {
+    background:#222;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav class="navbar navbar-light bg-light">
+<div class="container">
+<b>🍽 Work & Brew</b>
+
+<div class="nav-buttons">
+<a href="#specialties">Specialties</a>
+<a href="#gallery">Gallery</a>
+<a href="#reservations">Book</a>
+<a href="#" onclick="loginAdmin()">Admin</a>
+</div>
+</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+<h1>Book your table</h1>
+</div>
+
+<!-- SPECIALTIES -->
+<div id="specialties" class="specialties text-center">
+<h2 class="section-title">Specialties</h2>
+
+<div class="container mt-4">
+<div class="row">
+
+<div class="col-md-4">
+<div class="dish-card">
+<img src="https://www.recetassinlactosa.com/wp-content/uploads/2021/06/Costillas-de-cerdo-bbq_3720.jpg" style="width:100%;height:250px;object-fit:cover;">
+<p>BBQ Ribs</p>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="dish-card">
+<img src="https://pescadoymariscosfranklin.com/cdn/shop/articles/Pulpo_a_la_parrila_Pescado_y_mariscos_Franklin.jpg" style="width:100%;height:250px;object-fit:cover;">
+<p>Grilled Octopus</p>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="dish-card">
+<img src="https://content-cocina.lecturas.com/medio/2019/03/13/arroz-negro-con-sepia_00000000_240703113912_1200x1200.jpg" style="width:100%;height:250px;object-fit:cover;">
+<p>Black Rice with Aioli</p>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+<!-- MENU DINÁMICO -->
+<div class="container mt-4">
+<div id="platesList" class="row"></div>
+</div>
+
+<!-- GALLERY -->
+<div id="gallery" class="gallery text-center">
+<h2 class="section-title">Gallery</h2>
+
+<div class="container-fluid mt-4">
+<div class="row g-2">
+
+<div class="col-md-3"><img src="https://images.unsplash.com/photo-1559339352-11d035aa65de" class="gallery-img"></div>
+<div class="col-md-3"><img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38" class="gallery-img"></div>
+<div class="col-md-3"><img src="https://images.unsplash.com/photo-1552566626-52f8b828add9" class="gallery-img"></div>
+<div class="col-md-3"><img src="https://images.unsplash.com/photo-1528605248644-14dd04022da1" class="gallery-img"></div>
+
+</div>
+</div>
+</div>
+
+<!-- RESERVATIONS -->
+<div id="reservations" class="reservations">
+<div class="container">
+
+<h2 class="text-center">Reservations</h2>
+
+<input id="name" class="form-control mb-2" placeholder="Customer name">
+<input id="date" type="date" class="form-control mb-2">
+<input id="people" class="form-control mb-2" placeholder="Number of people">
+
+<button class="btn btn-success" onclick="createReservation()">Book</button>
+<button class="btn btn-primary mt-2" onclick="loadReservations()">Load reservations</button>
+
+<div id="reservationList"></div>
+
+</div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminPanel">
+<div class="container">
+
+<h2>Admin Panel</h2>
+
+<h4>Add new dish</h4>
+<input id="plateName" class="form-control mb-2" placeholder="Dish name">
+<input id="platePrice" type="number" step="0.01" class="form-control mb-2" placeholder="Price (€)">
+<button onclick="createPlate()" class="btn btn-success">Add</button>
+
+<h4 class="mt-4">Manage dishes</h4>
+<button onclick="loadPlatesAdmin()" class="btn btn-primary mb-2">Load dishes</button>
+<div id="adminPlates"></div>
+
+<h4 class="mt-4">Manage reservations</h4>
+<button onclick="loadReservationsAdmin()" class="btn btn-primary">Load</button>
+<div id="adminReservations"></div>
+
+</div>
+</div>
+
+<!-- LOCATION -->
+<div id="location" class="ubicacion">
+<div class="container text-center">
+<h2 class="section-title">Where to find us</h2>
+
+<div class="card p-4 mt-4">
+<h4>Work & Brew Restaurant</h4>
+<p>Vicálvaro, Madrid</p>
+
+<iframe src="https://www.google.com/maps?q=Vicalvaro+Madrid&output=embed"
+width="100%" height="300" style="border-radius:10px;"></iframe>
+
+</div>
+</div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+© 2026 Work & Brew Restaurant
+</div>
+
+<script>
+
+/* LOGIN */
+function loginAdmin(){
+const user = prompt("Username:");
+const pass = prompt("Password:");
+if(user==="admin" && pass==="1234"){
+document.getElementById("adminPanel").style.display="block";
+loadPlatesAdmin();
+loadReservationsAdmin();
+}
+}
+
+/* PLATES */
+function loadPlates(){
+fetch("/plates")
+.then(r=>r.json())
+.then(data=>{
+document.getElementById("platesList").innerHTML =
+data.map(p=>`
+<div class="col-md-4">
+<div class="dish-card">
+<p><b>${p.name}</b></p>
+<p>${p.price} €</p>
+</div>
+</div>
+`).join("");
+});
+}
+
+function loadPlatesAdmin(){
+fetch("/plates")
+.then(r=>r.json())
+.then(data=>{
+document.getElementById("adminPlates").innerHTML =
+data.map(p=>`
+<div class="border p-2 mb-2">
+<b>${p.name}</b> - ${p.price} €
+<button onclick="deletePlate(${p.id})" class="btn btn-danger btn-sm">Delete</button>
+<button onclick="editPlate(${p.id})" class="btn btn-warning btn-sm">Edit</button>
+</div>
+`).join("");
+});
+}
+
+function createPlate(){
+fetch("/plates",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+name:document.getElementById("plateName").value,
+price:document.getElementById("platePrice").value
+})
+}).then(()=>{
+loadPlates();
+loadPlatesAdmin();
+});
+}
+
+function deletePlate(id){
+fetch(`/plates/${id}`,{method:"DELETE"}).then(()=>{
+loadPlates();
+loadPlatesAdmin();
+});
+}
+
+function editPlate(id){
+const name = prompt("New name:");
+const price = prompt("New price:");
+fetch(`/plates/${id}`,{
+method:"PUT",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({name,price})
+}).then(()=>{
+loadPlates();
+loadPlatesAdmin();
+});
+}
+
+/* RESERVATIONS */
+function createReservation(){
+fetch("/orders",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+clientName: document.getElementById("name").value,
+plates: [],
+total: document.getElementById("people").value
+})
+}).then(()=>{
+loadReservations();
+loadReservationsAdmin();
+});
+}
+
+function loadReservations(){
+fetch("/orders")
+.then(r=>r.json())
+.then(data=>{
+document.getElementById("reservationList").innerHTML =
+data.map(r=>`
+<div class="border p-2 mb-2">
+<b>${r.clientName}</b><br>
+👥 ${r.total} people
+</div>
+`).join("");
+});
+}
+
+/* ADMIN RESERVATIONS */
+function loadReservationsAdmin(){
+fetch("/orders")
+.then(r=>r.json())
+.then(data=>{
+document.getElementById("adminReservations").innerHTML =
+data.map(r=>`
+<div class="border p-2 mb-2">
+<b>${r.clientName}</b> - ${r.total} people
+<br>
+<button onclick="deleteReservation(${r.id})" class="btn btn-danger btn-sm">Delete</button>
+<button onclick="editReservation(${r.id})" class="btn btn-warning btn-sm">Edit</button>
+</div>
+`).join("");
+});
+}
+
+function deleteReservation(id){
+fetch(`/orders/${id}`,{method:"DELETE"})
+.then(()=>{
+loadReservationsAdmin();
+loadReservations();
+});
+}
+
+function editReservation(id){
+const clientName = prompt("New name:");
+const total = prompt("New number of people:");
+
+fetch(`/orders/${id}`,{
+method:"PUT",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+clientName,
+plates: [],
+total
+})
+}).then(()=>{
+loadReservationsAdmin();
+loadReservations();
+});
+}
+
+window.onload = loadPlates;
+
+</script>
+
+</body>
+</html>
